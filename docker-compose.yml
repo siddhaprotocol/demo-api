@@ -6,6 +6,6 @@ services:
     container_name: mint
     build: .
     ports:
-      - "80:8000"
+      - "8000:80"
     env_file:
       - .env
