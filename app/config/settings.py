@@ -11,9 +11,6 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     """Application settings with environment variable binding."""
 
-    # Cross-origin (unchanged, just showing it)
-    allowed_origins: List[str] = Field(default=["*"])
-
     # Redis / Valkey connection
     redis_host: str = "localhost"
     redis_port: int = 6379
@@ -39,8 +36,7 @@ class Settings(BaseSettings):
         )
 
     model_config = ConfigDict(
-        env_file=None,  # we already loaded the right file above
-        case_sensitive=False,
+        env_file=None, env_file_encoding="utf-8", case_sensitive=True, extra="ignore"
     )
 
 
