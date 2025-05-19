@@ -8,8 +8,6 @@ __pycache__
 *.db
 *.sqlite3
 *.log
-.env
-.env.*
 .DS_Store
 .git
 .gitignore
