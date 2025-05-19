@@ -1,12 +1,12 @@
 # Mint-Server
 
-A high-performance API server for generating and serving mock invoice data with Redis caching.
+A high-performance API server for generating and serving mock invoice data with Redis/Valkey caching.
 
 ## Overview
 
 Mint-Server is a FastAPI-based application that provides a RESTful API for retrieving mock invoice data. It includes:
 
-- Redis-based caching for improved performance
+- Redis/Valkey ElastiCache caching for improved performance
 - Configurable invoice data generation
 - Comprehensive test coverage
 - Docker containerization for easy deployment
@@ -14,16 +14,18 @@ Mint-Server is a FastAPI-based application that provides a RESTful API for retri
 ## Features
 
 - **Mock Invoice Generation**: Creates realistic mock invoices with configurable properties
-- **Redis Caching**: Implements efficient caching with TTL for improved response times
+- **Flexible Caching**: Supports both local Redis and AWS Valkey ElastiCache
+- **TLS/SSL Support**: Secure connections to AWS ElastiCache
 - **Configurable Limits**: Allows customization of data retrieval through query parameters
-- **Resilient Design**: Graceful handling of Redis connection failures
+- **Resilient Design**: Graceful handling of cache connection failures
 - **Docker Support**: Ready for containerized deployment with Docker and Docker Compose
 - **Comprehensive Testing**: Complete test suite for all components
 
 ## Tech Stack
 
 - **FastAPI**: Modern, high-performance web framework
-- **Redis**: In-memory data store for caching
+- **Redis/Valkey**: In-memory data store for caching
+- **AWS ElastiCache**: Managed caching service in the cloud
 - **Pydantic**: Data validation and settings management
 - **Docker**: Containerization for consistent deployment
 - **Pytest**: Testing framework
@@ -43,6 +45,8 @@ Mint-Server/
       schemas/              # Data models and validation
       services/             # Business logic
    main.py               # Application entry point
+   docs/                     # Documentation
+      valkey_elasticache_setup.md  # AWS ElastiCache setup guide
    scripts/                  # Utility scripts
    tests/                    # Test suite
    Dockerfile                # Docker image definition
@@ -58,6 +62,7 @@ Mint-Server/
 - Python 3.12+
 - Redis server (optional for local development)
 - Docker and Docker Compose (for containerized deployment)
+- AWS account (for Valkey ElastiCache deployment)
 
 ### Local Development Setup
 
@@ -78,8 +83,9 @@ Mint-Server/
    pip install -r requirements.txt
    ```
 
-4. Create a `.env` file with your configuration:
+4. Create a `.env` file with your configuration (for local Redis):
    ```
+   CACHE_PROVIDER=redis
    REDIS_HOST=localhost
    REDIS_PORT=6379
    REDIS_PASSWORD=your_password
@@ -91,14 +97,33 @@ Mint-Server/
    uvicorn app.main:app --reload
    ```
 
-### Docker Deployment
+### Docker Deployment with Local Redis
 
-1. Build and start the containers:
+1. Build and start the containers with local Redis:
    ```bash
-   docker compose up -d
+   docker compose --profile local-dev up -d
    ```
 
 2. The API will be available at `http://localhost:8000`
+
+### AWS ElastiCache Deployment
+
+1. Set up AWS Valkey ElastiCache according to [the setup guide](docs/valkey_elasticache_setup.md)
+
+2. Create a `.env` file with your ElastiCache configuration:
+   ```
+   CACHE_PROVIDER=valkey
+   REDIS_HOST=your-elasticache-endpoint.region.cache.amazonaws.com
+   REDIS_PORT=6379
+   REDIS_PASSWORD=your_auth_token  # if configured
+   ELASTICACHE_TLS_ENABLED=true
+   AWS_REGION=your-aws-region
+   ```
+
+3. Deploy using Docker (without local Redis):
+   ```bash
+   docker compose up -d
+   ```
 
 ## API Documentation
 
@@ -137,19 +162,27 @@ The application can be configured through environment variables or a `.env` file
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `REDIS_HOST` | Redis server hostname | `localhost` |
-| `REDIS_PORT` | Redis server port | `6379` |
-| `REDIS_PASSWORD` | Redis server password | `""` (empty string) |
-| `REDIS_DB` | Redis database index | `0` |
+| `CACHE_PROVIDER` | Cache provider to use ('redis' or 'valkey') | `redis` |
+| `REDIS_HOST` | Redis/Valkey server hostname | `localhost` |
+| `REDIS_PORT` | Redis/Valkey server port | `6379` |
+| `REDIS_PASSWORD` | Redis/Valkey server password | `""` (empty string) |
+| `REDIS_DB` | Redis/Valkey database index | `0` |
+| `ELASTICACHE_TLS_ENABLED` | Enable TLS for ElastiCache connection | `false` |
+| `ELASTICACHE_SSL_CERT_REQS` | SSL verification mode: 'none', 'optional', 'required' | `null` |
+| `AWS_REGION` | AWS region for ElastiCache | `null` |
+| `REDIS_CONNECTION_POOL_SIZE` | Connection pool size | `10` |
+| `REDIS_CONNECTION_TIMEOUT` | Connection timeout in seconds | `5` |
 | `ALLOWED_ORIGINS` | CORS allowed origins | `["*"]` |
 
 ## Caching
 
-The application uses Redis for caching invoice data:
+The application supports both Redis and AWS Valkey ElastiCache for caching invoice data:
 
 - Each request is cached based on the `limit` parameter
 - Cache TTL is set to 60 seconds by default
-- The application handles Redis connection failures gracefully
+- The application handles cache connection failures gracefully
+- Connection pooling improves performance
+- TLS/SSL support for secure connections to ElastiCache
 
 ## Testing
 
