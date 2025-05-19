@@ -2,10 +2,9 @@
 Configuration settings for the application.
 """
 
-from typing import Any, Dict, List
+from typing import Any, Dict
 
-from pydantic import ConfigDict, Field
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from app.core.logging import get_logger
 
@@ -39,8 +38,8 @@ class Settings(BaseSettings):
             max_connections=self.redis_connection_pool_size,
         )
 
-    model_config = ConfigDict(
-        env_file=None, env_file_encoding="utf-8", case_sensitive=True, extra="ignore"
+    model_config = SettingsConfigDict(
+        env_file=".env", env_file_encoding="utf-8", case_sensitive=True, extra="ignore"
     )
 
 
