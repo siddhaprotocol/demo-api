@@ -5,7 +5,7 @@ Main application entry point.
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import router
+from app.api import router
 from app.config import settings
 from app.core.logging import get_logger
 
