@@ -49,59 +49,12 @@ def test_singleton_pattern():
 
 def test_get_connection_params_basic():
     """Test getting connection parameters without TLS."""
-    with patch.object(settings, "elasticache_tls_enabled", False):
-        params = CacheService._get_connection_params()
+    params = CacheService._get_connection_params()
 
-        assert params["host"] == settings.redis_host
-        assert params["port"] == settings.redis_port
-        assert params["db"] == settings.redis_db
-        assert params["password"] == settings.redis_password
-        assert "ssl_context" not in params
-
-
-def test_get_connection_params_with_tls():
-    """Test getting connection parameters with TLS enabled."""
-    with patch.object(settings, "elasticache_tls_enabled", True):
-        params = CacheService._get_connection_params()
-
-        assert params["host"] == settings.redis_host
-        assert params["port"] == settings.redis_port
-        assert params["db"] == settings.redis_db
-        assert params["password"] == settings.redis_password
-        assert isinstance(params["ssl_context"], ssl.SSLContext)
-
-
-def test_get_connection_params_with_cert_none():
-    """Test SSL verification none."""
-    with patch.object(settings, "elasticache_tls_enabled", True), patch.object(
-        settings, "elasticache_ssl_cert_reqs", "none"
-    ):
-        params = CacheService._get_connection_params()
-
-        assert params["ssl_context"].check_hostname is False
-        assert params["ssl_context"].verify_mode == ssl.CERT_NONE
-
-
-def test_get_connection_params_with_cert_optional():
-    """Test SSL verification optional."""
-    with patch.object(settings, "elasticache_tls_enabled", True), patch.object(
-        settings, "elasticache_ssl_cert_reqs", "optional"
-    ):
-        params = CacheService._get_connection_params()
-
-        assert params["ssl_context"].check_hostname is False
-        assert params["ssl_context"].verify_mode == ssl.CERT_OPTIONAL
-
-
-def test_get_connection_params_with_cert_required():
-    """Test SSL verification required."""
-    with patch.object(settings, "elasticache_tls_enabled", True), patch.object(
-        settings, "elasticache_ssl_cert_reqs", "required"
-    ):
-        params = CacheService._get_connection_params()
-
-        assert params["ssl_context"].check_hostname is True
-        assert params["ssl_context"].verify_mode == ssl.CERT_REQUIRED
+    assert params["host"] == settings.redis_host
+    assert params["port"] == settings.redis_port
+    assert params["db"] == settings.redis_db
+    assert params["password"] == settings.redis_password
 
 
 def test_get_success(cache_service, mock_redis_client):

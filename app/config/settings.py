@@ -2,7 +2,7 @@
 Configuration settings for the application.
 """
 
-from typing import List, Optional
+from typing import List
 
 from dotenv import load_dotenv
 from pydantic import ConfigDict, Field
@@ -27,11 +27,6 @@ class Settings(BaseSettings):
     redis_port: int = Field(default=6379)
     redis_db: int = Field(default=0)
     redis_password: str = Field(default="")
-
-    # AWS ElastiCache specific settings
-    aws_region: Optional[str] = Field(default=None)
-    elasticache_tls_enabled: bool = Field(default=False)
-    elasticache_ssl_cert_reqs: Optional[str] = Field(default=None)
 
     # Connection pool settings
     redis_connection_pool_size: int = Field(default=10)
