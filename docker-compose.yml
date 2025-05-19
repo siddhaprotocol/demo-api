@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  mint:
+    image: mint
+    container_name: mint
+    build: .
+    ports:
+      - "8000:80"
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    
+  redis:
+    image: redis:latest
+    container_name: mint-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:

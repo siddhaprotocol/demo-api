@@ -1,10 +1,9 @@
 """
-Caching service for Redis and Valkey ElastiCache.
+Redis caching service.
 """
 
 import json
-import ssl
-from typing import Any, Dict, Optional, TypeVar
+from typing import Any, Optional, TypeVar
 
 import redis
 from redis.exceptions import RedisError
@@ -18,85 +17,50 @@ logger = get_logger(__name__)
 T = TypeVar("T")
 
 
-class CacheService:
+class RedisCacheService:
     """
-    Service for interacting with Redis/Valkey cache.
+    Service for interacting with Redis cache.
     """
 
     _instance = None
     _client = None
-    _connection_pool = None
 
     def __new__(cls):
         """Implement singleton pattern."""
         if cls._instance is None:
-            cls._instance = super(CacheService, cls).__new__(cls)
+            cls._instance = super(RedisCacheService, cls).__new__(cls)
             try:
-                connection_params = cls._get_connection_params()
-                cls._connection_pool = redis.ConnectionPool(
-                    **connection_params,
-                    max_connections=settings.redis_connection_pool_size,
-                )
                 cls._client = redis.Redis(
-                    connection_pool=cls._connection_pool,
-                    socket_timeout=settings.redis_connection_timeout,
+                    host=settings.redis_host,
+                    port=settings.redis_port,
+                    db=settings.redis_db,
+                    password=settings.redis_password,
                     decode_responses=True,
                 )
                 # Test connection
                 cls._client.ping()
-                logger.info(
-                    f"Connected to {settings.cache_provider.capitalize()} cache"
-                )
+                logger.info("Connected to Redis cache")
             except RedisError as e:
-                logger.error(
-                    f"Failed to connect to {settings.cache_provider.capitalize()}: {str(e)}"
-                )
-                # Don't raise here to allow application to start even if cache is unavailable
-                # Connection will be retried on next operation
+                logger.error(f"Failed to connect to Redis: {str(e)}")
         return cls._instance
-
-    @staticmethod
-    def _get_connection_params() -> Dict[str, Any]:
-        """
-        Get connection parameters based on configuration.
-
-        Returns:
-            Dictionary of connection parameters
-        """
-        connection_params = {
-            "host": settings.redis_host,
-            "port": settings.redis_port,
-            "db": settings.redis_db,
-            "password": settings.redis_password,
-        }
-        return connection_params
 
     @property
     def client(self) -> redis.Redis:
         """Get Redis client, reconnecting if necessary."""
-        if self._client is None or self._connection_pool is None:
+        if self._client is None:
             try:
-                connection_params = self._get_connection_params()
-                self._connection_pool = redis.ConnectionPool(
-                    **connection_params,
-                    max_connections=settings.redis_connection_pool_size,
-                )
                 self._client = redis.Redis(
-                    connection_pool=self._connection_pool,
-                    socket_timeout=settings.redis_connection_timeout,
+                    host=settings.redis_host,
+                    port=settings.redis_port,
+                    db=settings.redis_db,
+                    password=settings.redis_password,
                     decode_responses=True,
                 )
                 self._client.ping()
-                logger.info(
-                    f"Reconnected to {settings.cache_provider.capitalize()} cache"
-                )
+                logger.info("Reconnected to Redis cache")
             except RedisError as e:
-                logger.error(
-                    f"Failed to reconnect to {settings.cache_provider.capitalize()}: {str(e)}"
-                )
-                raise CacheConnectionError(
-                    f"Failed to connect to {settings.cache_provider.capitalize()}: {str(e)}"
-                )
+                logger.error(f"Failed to reconnect to Redis: {str(e)}")
+                raise CacheConnectionError(f"Failed to connect to Redis: {str(e)}")
         return self._client
 
     def get(self, key: str) -> Optional[str]:
@@ -110,13 +74,13 @@ class CacheService:
             Cached value or None if not found
 
         Raises:
-            CacheConnectionError: If cache connection fails
-            CacheOperationError: If cache operation fails
+            CacheConnectionError: If Redis connection fails
+            CacheOperationError: If Redis operation fails
         """
         try:
             return self.client.get(key)
         except RedisError as e:
-            logger.error(f"Cache get error for key {key}: {str(e)}")
+            logger.error(f"Redis get error for key {key}: {str(e)}")
             raise CacheOperationError(f"Failed to get from cache: {str(e)}")
 
     def set(self, key: str, value: str, ttl: int) -> None:
@@ -129,13 +93,13 @@ class CacheService:
             ttl: Time to live in seconds
 
         Raises:
-            CacheConnectionError: If cache connection fails
-            CacheOperationError: If cache operation fails
+            CacheConnectionError: If Redis connection fails
+            CacheOperationError: If Redis operation fails
         """
         try:
             self.client.setex(key, ttl, value)
         except RedisError as e:
-            logger.error(f"Cache set error for key {key}: {str(e)}")
+            logger.error(f"Redis set error for key {key}: {str(e)}")
             raise CacheOperationError(f"Failed to set in cache: {str(e)}")
 
     def get_json(self, key: str) -> Optional[Any]:
@@ -149,8 +113,8 @@ class CacheService:
             Deserialized JSON value or None if not found
 
         Raises:
-            CacheConnectionError: If cache connection fails
-            CacheOperationError: If cache operation fails
+            CacheConnectionError: If Redis connection fails
+            CacheOperationError: If Redis operation fails
         """
         data = self.get(key)
         if data:
@@ -174,8 +138,8 @@ class CacheService:
             ttl: Time to live in seconds
 
         Raises:
-            CacheConnectionError: If cache connection fails
-            CacheOperationError: If cache operation fails
+            CacheConnectionError: If Redis connection fails
+            CacheOperationError: If Redis operation fails
         """
         try:
             json_value = json.dumps(value)
@@ -186,4 +150,4 @@ class CacheService:
 
 
 # Global singleton instance
-redis_cache = CacheService()
+redis_cache = RedisCacheService()

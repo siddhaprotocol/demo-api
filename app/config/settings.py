@@ -19,7 +19,7 @@ class Settings(BaseSettings):
 
     # Cache Provider Settings
     cache_provider: str = Field(
-        default="redis", description="Cache provider: 'redis' or 'valkey'"
+        default="valkey", description="Cache provider: 'redis' or 'valkey'"
     )
 
     # Redis/Valkey Connection Settings
