@@ -29,12 +29,6 @@ class RedisCacheService:
         try:
             self._client = redis.Redis(**settings.redis_kwargs)
             self._client.ping()
-            logger.info(
-                "Connected to %s at %s:%s",
-                settings.cache_provider.capitalize(),
-                settings.redis_host,
-                settings.redis_port,
-            )
         except RedisError as exc:
             logger.error("Failed to connect to Redis/Valkey: %s", exc, exc_info=True)
             self._client = None

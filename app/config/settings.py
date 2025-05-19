@@ -10,12 +10,6 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     """Application settings with environment variable binding."""
-
-    # General
-    cache_provider: str = Field(
-        default="redis", description="Cache provider: 'redis' or 'valkey'"
-    )
-
     # Cross-origin (unchanged, just showing it)
     allowed_origins: List[str] = Field(default=["*"])
 
