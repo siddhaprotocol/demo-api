@@ -11,7 +11,7 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     """Application settings with environment variable binding."""
 
-    # Redis / Valkey connection
+    # Redis connection
     redis_host: str = "localhost"
     redis_port: int = 6379
     redis_db: int = 0

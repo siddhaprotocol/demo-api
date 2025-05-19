@@ -1,12 +1,12 @@
 # Mint-Server
 
-A high-performance API server for generating and serving mock invoice data with Redis/Valkey caching.
+A high-performance API server for generating and serving mock invoice data with Redis caching.
 
 ## Overview
 
 Mint-Server is a FastAPI-based application that provides a RESTful API for retrieving mock invoice data. It includes:
 
-- Redis/Valkey ElastiCache caching for improved performance
+- Redis caching for improved performance
 - Configurable invoice data generation
 - Comprehensive test coverage
 - Docker containerization for easy deployment
@@ -14,7 +14,7 @@ Mint-Server is a FastAPI-based application that provides a RESTful API for retri
 ## Features
 
 - **Mock Invoice Generation**: Creates realistic mock invoices with configurable properties
-- **Flexible Caching**: Supports both local Redis and AWS Valkey ElastiCache
+- **Flexible Caching**: Supports both local Redis and AWS ElastiCache
 - **TLS/SSL Support**: Secure connections to AWS ElastiCache
 - **Configurable Limits**: Allows customization of data retrieval through query parameters
 - **Resilient Design**: Graceful handling of cache connection failures
@@ -24,7 +24,7 @@ Mint-Server is a FastAPI-based application that provides a RESTful API for retri
 ## Tech Stack
 
 - **FastAPI**: Modern, high-performance web framework
-- **Redis/Valkey**: In-memory data store for caching
+- **Redis**: In-memory data store for caching
 - **AWS ElastiCache**: Managed caching service in the cloud
 - **Pydantic**: Data validation and settings management
 - **Docker**: Containerization for consistent deployment
@@ -46,7 +46,7 @@ Mint-Server/
       services/             # Business logic
    main.py               # Application entry point
    docs/                     # Documentation
-      valkey_elasticache_setup.md  # AWS ElastiCache setup guide
+      elasticache_setup.md  # AWS ElastiCache setup guide
    scripts/                  # Utility scripts
    tests/                    # Test suite
    Dockerfile                # Docker image definition
@@ -62,7 +62,7 @@ Mint-Server/
 - Python 3.12+
 - Redis server (optional for local development)
 - Docker and Docker Compose (for containerized deployment)
-- AWS account (for Valkey ElastiCache deployment)
+- AWS account (for ElastiCache deployment)
 
 ### Local Development Setup
 
@@ -108,11 +108,11 @@ Mint-Server/
 
 ### AWS ElastiCache Deployment
 
-1. Set up AWS Valkey ElastiCache according to [the setup guide](docs/valkey_elasticache_setup.md)
+1. Set up AWS ElastiCache according to [the setup guide](docs/elasticache_setup.md)
 
 2. Create a `.env` file with your ElastiCache configuration:
    ```
-   CACHE_PROVIDER=valkey
+   CACHE_PROVIDER=redis
    REDIS_HOST=your-elasticache-endpoint.region.cache.amazonaws.com
    REDIS_PORT=6379
    REDIS_PASSWORD=your_auth_token  # if configured
@@ -162,11 +162,11 @@ The application can be configured through environment variables or a `.env` file
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `CACHE_PROVIDER` | Cache provider to use ('redis' or 'valkey') | `redis` |
-| `REDIS_HOST` | Redis/Valkey server hostname | `localhost` |
-| `REDIS_PORT` | Redis/Valkey server port | `6379` |
-| `REDIS_PASSWORD` | Redis/Valkey server password | `""` (empty string) |
-| `REDIS_DB` | Redis/Valkey database index | `0` |
+| `CACHE_PROVIDER` | Cache provider to use | `redis` |
+| `REDIS_HOST` | Redis server hostname | `localhost` |
+| `REDIS_PORT` | Redis server port | `6379` |
+| `REDIS_PASSWORD` | Redis server password | `""` (empty string) |
+| `REDIS_DB` | Redis database index | `0` |
 | `ELASTICACHE_TLS_ENABLED` | Enable TLS for ElastiCache connection | `false` |
 | `ELASTICACHE_SSL_CERT_REQS` | SSL verification mode: 'none', 'optional', 'required' | `null` |
 | `AWS_REGION` | AWS region for ElastiCache | `null` |
@@ -176,7 +176,7 @@ The application can be configured through environment variables or a `.env` file
 
 ## Caching
 
-The application supports both Redis and AWS Valkey ElastiCache for caching invoice data:
+The application supports Redis for caching invoice data:
 
 - Each request is cached based on the `limit` parameter
 - Cache TTL is set to 60 seconds by default

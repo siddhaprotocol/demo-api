@@ -30,7 +30,7 @@ class RedisCacheService:
             self._client = redis.Redis(**settings.redis_kwargs)
             self._client.ping()
         except RedisError as exc:
-            logger.error("Failed to connect to Redis/Valkey: %s", exc, exc_info=True)
+            logger.error("Failed to connect to Redis: %s", exc, exc_info=True)
             self._client = None
 
     @property
