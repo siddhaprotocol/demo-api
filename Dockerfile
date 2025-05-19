@@ -1,14 +1,12 @@
-FROM python:3.12.3-slim
+FROM python:3.12.3
 
 WORKDIR /code
 
-# Install system dependencies
+# Install necessary packages
 RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get upgrade -y
 
-# Install Python dependencies
+# Copy and install requirements
 COPY ./requirements.txt /code/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
