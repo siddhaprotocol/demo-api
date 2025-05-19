@@ -2,6 +2,7 @@
 Configuration settings for the application.
 """
 
+import os
 from typing import Any, Dict
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -15,10 +16,10 @@ class Settings(BaseSettings):
     """Application settings with environment variable binding."""
 
     # Redis connection
-    redis_host: str = "redis"
+    redis_host: str = os.getenv("REDIS_HOST", "redis")
     redis_port: int = 6379
     redis_db: int = 0
-    redis_password: str = ""
+    redis_password: str = os.getenv("REDIS_PASSWORD", None)
 
     # Connection-pool tweaks
     redis_connection_pool_size: int = 10
