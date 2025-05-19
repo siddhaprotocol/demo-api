@@ -72,23 +72,19 @@ class CacheService:
 
         # Add SSL/TLS configuration for AWS ElastiCache if enabled
         if settings.elasticache_tls_enabled:
-            ssl_context = ssl.create_default_context()
-
-            # Configure SSL verification mode if specified
+            # Define verification mode
+            cert_reqs = None
             if settings.elasticache_ssl_cert_reqs:
                 if settings.elasticache_ssl_cert_reqs.lower() == "none":
-                    ssl_context.check_hostname = False
-                    ssl_context.verify_mode = ssl.CERT_NONE
+                    cert_reqs = ssl.CERT_NONE
                 elif settings.elasticache_ssl_cert_reqs.lower() == "optional":
-                    ssl_context.check_hostname = False
-                    ssl_context.verify_mode = ssl.CERT_OPTIONAL
+                    cert_reqs = ssl.CERT_OPTIONAL
                 elif settings.elasticache_ssl_cert_reqs.lower() == "required":
-                    ssl_context.check_hostname = True
-                    ssl_context.verify_mode = ssl.CERT_REQUIRED
-
-            # Use 'ssl' parameter instead of 'ssl_context' for Redis 5.0.4 compatibility
-            connection_params["ssl"] = True
-            connection_params["ssl_cert_reqs"] = ssl_context.verify_mode
+                    cert_reqs = ssl.CERT_REQUIRED
+            
+            # Set basic SSL parameters without using ssl or ssl_context
+            if cert_reqs is not None:
+                connection_params["ssl_cert_reqs"] = cert_reqs
 
         return connection_params
 
