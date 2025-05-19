@@ -13,8 +13,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY ./app /code/app
 
-# Copy configuration files
-COPY ./.env /code/.env
-
 # Start the application
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
