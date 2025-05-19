@@ -7,6 +7,10 @@ from typing import Any, Dict, List
 from pydantic import ConfigDict, Field
 from pydantic_settings import BaseSettings
 
+from app.core.logging import get_logger
+
+logger = get_logger(__name__)
+
 
 class Settings(BaseSettings):
     """Application settings with environment variable binding."""
@@ -41,3 +45,4 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+logger.info("Redis host=%s  port=%s", settings.redis_host, settings.redis_port)
