@@ -11,20 +11,6 @@ services:
     env_file:
       - .env
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
-    depends_on:
-      - redis
-
-  redis:
-    image: redis:alpine
-    container_name: mint-cache
-    ports:
-      - "6379:6379"
-    restart: always
-    env_file:
-      - .env
-    command: redis-server --requirepass ${REDIS_PASSWORD}
-    volumes:
-      - redis_data:/data
 
 volumes:
   redis_data:
