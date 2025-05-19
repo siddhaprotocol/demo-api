@@ -69,14 +69,6 @@ class CacheService:
             "db": settings.redis_db,
             "password": settings.redis_password,
         }
-
-        # For AWS ElastiCache with TLS, log a warning about SSL configuration
-        if settings.elasticache_tls_enabled:
-            logger.warning(
-                "TLS/SSL is enabled but SSL parameters are omitted due to Redis 5.0.4 compatibility issues."
-                " Consider upgrading Redis to a newer version for proper TLS support."
-            )
-
         return connection_params
 
     @property
