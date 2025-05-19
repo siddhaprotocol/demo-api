@@ -86,7 +86,9 @@ class CacheService:
                     ssl_context.check_hostname = True
                     ssl_context.verify_mode = ssl.CERT_REQUIRED
 
-            connection_params["ssl_context"] = ssl_context
+            # Use 'ssl' parameter instead of 'ssl_context' for Redis 5.0.4 compatibility
+            connection_params["ssl"] = True
+            connection_params["ssl_cert_reqs"] = ssl_context.verify_mode
 
         return connection_params
 
