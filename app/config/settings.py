@@ -2,24 +2,19 @@
 Configuration settings for the application.
 """
 
-import os
-from pathlib import Path
 from typing import Any, Dict, List
 
 from dotenv import load_dotenv
 from pydantic import ConfigDict, Field
 from pydantic_settings import BaseSettings
 
-ENVIRONMENT = os.getenv("ENVIRONMENT", "development").lower()
-
-load_dotenv(dotenv_path=Path(__file__).parent / f".env.{ENVIRONMENT}")
+load_dotenv()
 
 
 class Settings(BaseSettings):
     """Application settings with environment variable binding."""
 
     # General
-    environment: str = Field(default=ENVIRONMENT)
     cache_provider: str = Field(
         default="redis", description="Cache provider: 'redis' or 'valkey'"
     )
