@@ -56,7 +56,6 @@ def test_get_connection_params_basic():
         assert params["port"] == settings.redis_port
         assert params["db"] == settings.redis_db
         assert params["password"] == settings.redis_password
-        assert "ssl" not in params
         assert "ssl_context" not in params
 
 
@@ -69,7 +68,6 @@ def test_get_connection_params_with_tls():
         assert params["port"] == settings.redis_port
         assert params["db"] == settings.redis_db
         assert params["password"] == settings.redis_password
-        assert params["ssl"] is True
         assert isinstance(params["ssl_context"], ssl.SSLContext)
 
 

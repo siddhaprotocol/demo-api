@@ -86,7 +86,6 @@ class CacheService:
                     ssl_context.check_hostname = True
                     ssl_context.verify_mode = ssl.CERT_REQUIRED
 
-            connection_params["ssl"] = True
             connection_params["ssl_context"] = ssl_context
 
         return connection_params
