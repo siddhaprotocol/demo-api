@@ -26,7 +26,7 @@ Mint-Server is a FastAPI-based application that provides a RESTful API for retri
 - **FastAPI**: Modern, high-performance web framework
 - **Redis**: In-memory data store for caching
 - **AWS ElastiCache**: Managed caching service in the cloud
-- **Pydantic**: Data validation and settings management
+- **Pydantic**: Data validation
 - **Docker**: Containerization for consistent deployment
 - **Pytest**: Testing framework
 

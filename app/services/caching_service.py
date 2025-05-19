@@ -4,11 +4,10 @@ Redis caching service.
 
 import json
 from typing import Any, Optional
-
+import os
 import redis
 from redis.exceptions import RedisError
 
-from app.config.settings import settings
 from app.core.logging import get_logger
 from app.errors.cache_errors import CacheConnectionError, CacheOperationError
 
@@ -27,7 +26,10 @@ class RedisCacheService:
 
     def _connect(self) -> None:
         try:
-            self._client = redis.Redis(**settings.redis_kwargs)
+            self._client = redis.Redis(
+                host=os.getenv("REDIS_HOST", "localhost"),
+                password=os.getenv("REDIS_PASSWORD", None),
+            )
             self._client.ping()
         except RedisError as exc:
             logger.error("Failed to connect to Redis: %s", exc, exc_info=True)
