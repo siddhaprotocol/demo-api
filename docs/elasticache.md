@@ -33,29 +33,34 @@ Valkey is a compatible fork of Redis that is officially supported by AWS ElastiC
 
 ### 2. Update Environment Variables
 
+For development environments, you can keep using your local Redis:
+
+```
+ENVIRONMENT=development
+CACHE_PROVIDER=redis
+
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_DB=0
+REDIS_PASSWORD=
+
+REDIS_CONNECTION_POOL_SIZE=10
+REDIS_CONNECTION_TIMEOUT=5
+```
+
 Update your environment variables in `.env` file or in your deployment configuration:
 
 ```
-# Cache provider
+ENVIRONMENT=production
 CACHE_PROVIDER=valkey
 
-# Valkey ElastiCache connection
-REDIS_HOST=<your-elasticache-endpoint>
+REDIS_HOST=my-valkey-cluster.abc123.ap-south-1.cache.amazonaws.com
 REDIS_PORT=6379
-REDIS_PASSWORD=<your-auth-token-if-configured>
+REDIS_DB=0
+REDIS_PASSWORD=           # or an auth token
 
-# AWS ElastiCache specific settings
-AWS_REGION=<your-aws-region>
-ELASTICACHE_TLS_ENABLED=true
-ELASTICACHE_SSL_CERT_REQS=required
-```
-
-For development environments, you can keep using your local Redis:
-```
-CACHE_PROVIDER=redis
-REDIS_HOST=localhost
-REDIS_PORT=6379
-REDIS_PASSWORD=<local-password>
+REDIS_CONNECTION_POOL_SIZE=30        # bump if you have heavy traffic
+REDIS_CONNECTION_TIMEOUT=5
 ```
 
 ### 3. Connection Pool Settings
@@ -85,11 +90,13 @@ This will start the application without the local Redis container, connecting in
 
 ## Security Considerations
 
-1. **Network Security**: 
+1. **Network Security**:
+
    - Configure security groups to allow your application to connect to ElastiCache
    - ElastiCache nodes should typically not be exposed to the public internet
 
 2. **Authentication**:
+
    - Set a strong password for your ElastiCache instance
    - Store credentials securely, preferably using AWS Secrets Manager or similar service
 
