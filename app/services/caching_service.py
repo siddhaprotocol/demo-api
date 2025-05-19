@@ -3,7 +3,7 @@ Redis caching service.
 """
 
 import json
-from typing import Any, Optional, TypeVar
+from typing import Any, Optional
 
 import redis
 from redis.exceptions import RedisError
@@ -14,53 +14,37 @@ from app.errors.cache_errors import CacheConnectionError, CacheOperationError
 
 logger = get_logger(__name__)
 
-T = TypeVar("T")
-
 
 class RedisCacheService:
-    """
-    Service for interacting with Redis cache.
-    """
-
     _instance = None
-    _client = None
+    _client: redis.Redis | None = None
 
     def __new__(cls):
-        """Implement singleton pattern."""
         if cls._instance is None:
-            cls._instance = super(RedisCacheService, cls).__new__(cls)
-            try:
-                cls._client = redis.Redis(
-                    host=settings.redis_host,
-                    port=settings.redis_port,
-                    db=settings.redis_db,
-                    password=settings.redis_password,
-                    decode_responses=True,
-                )
-                # Test connection
-                cls._client.ping()
-                logger.info("Connected to Redis cache")
-            except RedisError as e:
-                logger.error(f"Failed to connect to Redis: {str(e)}")
+            cls._instance = super().__new__(cls)
+            cls._instance._connect()  # noqa: SLF001
         return cls._instance
+
+    def _connect(self) -> None:
+        try:
+            self._client = redis.Redis(**settings.redis_kwargs)
+            self._client.ping()
+            logger.info(
+                "Connected to %s at %s:%s",
+                settings.cache_provider.capitalize(),
+                settings.redis_host,
+                settings.redis_port,
+            )
+        except RedisError as exc:
+            logger.error("Failed to connect to Redis/Valkey: %s", exc, exc_info=True)
+            self._client = None
 
     @property
     def client(self) -> redis.Redis:
-        """Get Redis client, reconnecting if necessary."""
         if self._client is None:
-            try:
-                self._client = redis.Redis(
-                    host=settings.redis_host,
-                    port=settings.redis_port,
-                    db=settings.redis_db,
-                    password=settings.redis_password,
-                    decode_responses=True,
-                )
-                self._client.ping()
-                logger.info("Reconnected to Redis cache")
-            except RedisError as e:
-                logger.error(f"Failed to reconnect to Redis: {str(e)}")
-                raise CacheConnectionError(f"Failed to connect to Redis: {str(e)}")
+            self._connect()
+            if self._client is None:
+                raise CacheConnectionError("Could not establish cache connection.")
         return self._client
 
     def get(self, key: str) -> Optional[str]:
