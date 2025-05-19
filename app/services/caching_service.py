@@ -70,21 +70,12 @@ class CacheService:
             "password": settings.redis_password,
         }
 
-        # Add SSL/TLS configuration for AWS ElastiCache if enabled
+        # For AWS ElastiCache with TLS, log a warning about SSL configuration
         if settings.elasticache_tls_enabled:
-            # Define verification mode
-            cert_reqs = None
-            if settings.elasticache_ssl_cert_reqs:
-                if settings.elasticache_ssl_cert_reqs.lower() == "none":
-                    cert_reqs = ssl.CERT_NONE
-                elif settings.elasticache_ssl_cert_reqs.lower() == "optional":
-                    cert_reqs = ssl.CERT_OPTIONAL
-                elif settings.elasticache_ssl_cert_reqs.lower() == "required":
-                    cert_reqs = ssl.CERT_REQUIRED
-            
-            # Set basic SSL parameters without using ssl or ssl_context
-            if cert_reqs is not None:
-                connection_params["ssl_cert_reqs"] = cert_reqs
+            logger.warning(
+                "TLS/SSL is enabled but SSL parameters are omitted due to Redis 5.0.4 compatibility issues."
+                " Consider upgrading Redis to a newer version for proper TLS support."
+            )
 
         return connection_params
 
