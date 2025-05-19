@@ -10,6 +10,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     """Application settings with environment variable binding."""
+
     # Cross-origin (unchanged, just showing it)
     allowed_origins: List[str] = Field(default=["*"])
 
