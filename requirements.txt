@@ -5,3 +5,8 @@ python-dotenv
 pydantic-settings
 isort
 black
+redis
+pytest
+httpx
+coverage
+pytest-cov
