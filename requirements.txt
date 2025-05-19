@@ -2,3 +2,6 @@ fastapi[standard]
 Faker
 pydantic
 python-dotenv
+pydantic-settings
+isort
+black
