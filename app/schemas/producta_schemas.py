@@ -13,6 +13,5 @@ class ProductaStatus(BaseModel):
     """
 
     status: Literal["done", "processing"] = Field(
-        ..., description="Producta agent cron job status"
+        default="processing", description="Producta agent cron job status"
     )
-    lastUpdated: str = Field(..., description="Last update timestamp in ISO format")

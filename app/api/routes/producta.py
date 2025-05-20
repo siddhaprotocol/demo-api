@@ -16,13 +16,13 @@ router = APIRouter(prefix="/producta", tags=["producta"])
 @router.get(
     "/status", response_model=ProductaStatus, operation_id="producta/status/get"
 )
-async def get_producta_status(id: str) -> ProductaStatus:
+async def get_producta_status() -> ProductaStatus:
     """
     Get the status of a Producta.
     - Returns the current status for the producta cron job
     - Stored in Redis cache for 10 minutes
     """
-    return ProductaService.get_status(id)
+    return ProductaService.get_status()
 
 
 @router.patch(
