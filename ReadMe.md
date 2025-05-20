@@ -37,7 +37,6 @@ Mint-Server/
    app/                      # Application code
       api/                  # API routes
          routes/           # Endpoint definitions
-      config/               # Application configuration
       constants/            # Constants and defaults
       core/                 # Core functionality (logging, etc.)
       errors/               # Custom error definitions
@@ -46,8 +45,7 @@ Mint-Server/
       services/             # Business logic
    main.py               # Application entry point
    docs/                     # Documentation
-      elasticache_setup.md  # AWS ElastiCache setup guide
-   scripts/                  # Utility scripts
+      deployment.md        # AWS deployment guide
    tests/                    # Test suite
    Dockerfile                # Docker image definition
    docker-compose.yml        # Docker Compose configuration
@@ -106,24 +104,9 @@ Mint-Server/
 
 2. The API will be available at `http://localhost:8000`
 
-### AWS ElastiCache Deployment
+## Deployment
 
-1. Set up AWS ElastiCache according to [the setup guide](docs/elasticache_setup.md)
-
-2. Create a `.env` file with your ElastiCache configuration:
-   ```
-   CACHE_PROVIDER=redis
-   REDIS_HOST=your-elasticache-endpoint.region.cache.amazonaws.com
-   REDIS_PORT=6379
-   REDIS_PASSWORD=your_auth_token  # if configured
-   ELASTICACHE_TLS_ENABLED=true
-   AWS_REGION=your-aws-region
-   ```
-
-3. Deploy using Docker (without local Redis):
-   ```bash
-   docker compose up -d
-   ```
+For detailed instructions on deploying this application to AWS with multi-region support, see the [Deployment Guide](docs/deployment.md).
 
 ## API Documentation
 
