@@ -15,6 +15,7 @@ Mint-Server is a FastAPI-based application that provides a RESTful API for retri
 
 - **Mock Invoice Generation**: Creates realistic mock invoices with configurable properties
 - **ProductA Status API**: Endpoints for tracking and updating ProductA processing status
+- **Agent Activity Logs**: Deterministic agent logs for the scrolling ticker display
 - **Flexible Caching**: Supports both local Redis and AWS ElastiCache
 - **TLS/SSL Support**: Secure connections to AWS ElastiCache
 - **Configurable Limits**: Allows customization of data retrieval through query parameters
@@ -169,6 +170,22 @@ Updates the status of ProductA processing.
 }
 ```
 
+#### GET /logs/agent
+
+Retrieves deterministic agent activity logs for the scrolling ticker.
+
+**Query Parameters:**
+- `limit` (optional): Number of log messages to return (default: 10, min: 1, max: 20)
+
+**Response:**
+```json
+[
+  "Parser finished invoice #1423",
+  "RiskScore updated → 0.82",
+  "Batch 73 sent for funding"
+]
+```
+
 ## Configuration
 
 The application can be configured through environment variables or a `.env` file:
@@ -193,6 +210,7 @@ The application supports Redis for caching data:
 
 - Invoice requests are cached based on the `limit` parameter with a 60-second TTL
 - ProductA status is cached with a 10-minute TTL
+- Agent logs are cached with a 30-second TTL
 - The application handles cache connection failures gracefully
 - Connection pooling improves performance
 - TLS/SSL support for secure connections to ElastiCache
