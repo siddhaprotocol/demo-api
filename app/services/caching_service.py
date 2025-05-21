@@ -3,8 +3,9 @@ Redis caching service.
 """
 
 import json
-from typing import Any, Optional
 import os
+from typing import Any, Optional
+
 import redis
 from redis.exceptions import RedisError
 

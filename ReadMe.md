@@ -14,6 +14,7 @@ Mint-Server is a FastAPI-based application that provides a RESTful API for retri
 ## Features
 
 - **Mock Invoice Generation**: Creates realistic mock invoices with configurable properties
+- **ProductA Status API**: Endpoints for tracking and updating ProductA processing status
 - **Flexible Caching**: Supports both local Redis and AWS ElastiCache
 - **TLS/SSL Support**: Secure connections to AWS ElastiCache
 - **Configurable Limits**: Allows customization of data retrieval through query parameters
@@ -139,6 +140,35 @@ Retrieves a list of mock invoices.
 ]
 ```
 
+#### GET /producta/status
+
+Retrieves the current status of ProductA processing.
+
+**Response:**
+```json
+{
+  "status": "processing"  // Can be "processing" or "done"
+}
+```
+
+#### PATCH /producta/status
+
+Updates the status of ProductA processing.
+
+**Request Body:**
+```json
+{
+  "status": "done"  // Can be "processing" or "done"
+}
+```
+
+**Response:**
+```json
+{
+  "status": "done"
+}
+```
+
 ## Configuration
 
 The application can be configured through environment variables or a `.env` file:
@@ -159,10 +189,10 @@ The application can be configured through environment variables or a `.env` file
 
 ## Caching
 
-The application supports Redis for caching invoice data:
+The application supports Redis for caching data:
 
-- Each request is cached based on the `limit` parameter
-- Cache TTL is set to 60 seconds by default
+- Invoice requests are cached based on the `limit` parameter with a 60-second TTL
+- ProductA status is cached with a 10-minute TTL
 - The application handles cache connection failures gracefully
 - Connection pooling improves performance
 - TLS/SSL support for secure connections to ElastiCache
