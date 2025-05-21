@@ -1,0 +1,16 @@
+services:
+  mint:
+    container_name: mint-api
+    build: .
+    ports:
+      - "8000:80"
+    environment:
+      - REDIS_HOST=redis
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:latest
+    container_name: mint-redis
+    ports:
+      - "6379:6379"
